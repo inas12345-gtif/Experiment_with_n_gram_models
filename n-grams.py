@@ -106,3 +106,42 @@ print("{")
 for context, counter in ngram_counts.items():
     print(f"  '{context}': {counter},")
 print("}")
+#################################################################
+def build_ngram_model(dataset: list[str], n: int) -> dict[str, dict[str, float]]:
+    """Builds an n-gram language model.
+
+    This function takes a list of text strings (paragraphs or sentences) as
+    input, generates n-grams from each text using the function get_ngram_counts
+    and converts them into probabilities.  The resulting model is a dictionary,
+    where keys are (n-1)-token contexts and values are dictionaries mapping
+    possible next tokens to their conditional probabilities given the context.
+
+    Args:
+        dataset: A list of text strings representing the dataset.
+        n: The size of the n-grams (e.g., 2 for a bigram model).
+
+    Returns:
+        A dictionary representing the n-gram language model, where keys are
+        (n-1)-tokens contexts and values are dictionaries mapping possible next
+        tokens to their conditional probabilities.
+    """
+    # A dictionary to store P(B | A).
+    # ngram_model[context][token] should store P(token | context).
+    ngram_model = {}
+
+    # Use the ngram_counts as computed by the get_ngram_counts function.
+    ngram_counts = get_ngram_counts(dataset, n)
+
+
+    # Loop through the possible contexts. `context` is a string
+    # and `next_tokens` is a dictionary mapping possible next tokens to their
+    # counts of following `context`.
+    for context, next_tokens in ngram_counts.items():
+
+        # Compute Count(A) and P(B | A ) here.
+        context_total_count = sum(next_tokens.values())
+        ngram_model[context] = {}
+        for token, count in next_tokens.items():
+            ngram_model[context][token] = count / context_total_count
+
+    return ngram_model
